@@ -11,9 +11,9 @@
   tasks:  
     - name: Install Java
       ansibile.builtin.apt:
-       name: "{{ java_package }}"
-       update_cache: yes
-       state: present
+        name: "{{ java_package }}"
+        update_cache: yes
+        state: present
     - name: create tomcat user
       ansible.builtin.user:
         name: "{{ tomcat_username }}"
