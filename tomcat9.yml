@@ -10,7 +10,7 @@
     tomcat_shell: /bin/false
   tasks:  
     - name: Install Java
-      ansibile.builtin.apt:
+      apt:
         name: "{{ java_package }}"
         update_cache: yes
         state: present
