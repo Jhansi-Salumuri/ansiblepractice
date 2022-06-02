@@ -55,7 +55,7 @@
         var: tomcat_executables    
     - name: execute permissions to .sh files
       ansible.builtin.file:
-        path: "{{ items }}"
+        path: "{{ item }}"
         mode: 0751
       with_items: "{{ tomcat_executables }}"  
     - name: copy service file
