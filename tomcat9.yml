@@ -52,6 +52,6 @@
         tomcat_executables: "{{ shfiles.files | map(attribute='path') | list }}" 
     - name: print tomcatexcecutables
       debug:
-        var: tomcatexecutables    
+        var: tomcat_executables    
          
         
