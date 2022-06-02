@@ -38,7 +38,7 @@
         path: "{{ tomcat_home }}"
         state: directory
         recurse: yes
-        owner: {{ tomcat_user}}
+        owner: {{ tomcat_user }}
         group: {{ tomcat_user }} 
     - name: finding sh files
       ansible.builtin.find:
