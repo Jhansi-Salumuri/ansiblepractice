@@ -2,12 +2,8 @@
 - name: Installing tomcat9
   become: yes
   hosts: all
-  vars:
-    java_package: openjdk-11-jdk
-    tomcat_username: tomcat
-    tomcat_version: 9.0.63
-    tomcat_home: /opt/tomcat
-    tomcat_shell: /bin/false
+  vars_files:
+    - defaults.yml
   tasks:  
     - name: Install Java
       apt:
@@ -20,19 +16,26 @@
         home: "{{ tomcat_home }}"
         shell: "{{ tomcat_shell }}"
         state: present
+    - name: checking if the lastest tomcat dir is present
+      ansible.builtin.stat:
+        path: "{{ tomcat_home }}/latest"
+      register: tomcat_latest_dir
     - name: download tomcat
       ansible.builtin.get_url:
         url: https://dlcdn.apache.org/tomcat/tomcat-9/v{{ tomcat_version }}/bin/apache-tomcat-{{ tomcat_version }}.tar.gz 
         dest: /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz
+      when: not tomcat_latest_dir.stat.exists  
     - name: untar tomcat
       ansible.builtin.unarchive:
         src: /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz
         dest: "{{ tomcat_home }}"
+      when: not tomcat_latest_dir.stat.exists  
     - name: create a symlink
       ansible.builtin.file:
         src: "{{ tomcat_home }}/apache-tomcat-{{ tomcat_version }}"
         dest: "{{ tomcat_home }}/latest"
         state: link
+      when: not tomcat_latest_dir.stat.exists  
     - name: Recursively change ownership of a directory
       ansible.builtin.file:
         path: "{{ tomcat_home }}"
@@ -40,28 +43,26 @@
         recurse: yes
         owner: "{{ tomcat_username }}"
         group: "{{ tomcat_username }}"
+      when: not tomcat_latest_dir.stat.exists  
     - name: finding sh files
       ansible.builtin.find:
         path: "{{ tomcat_home }}/latest/bin"
         pattern: "*.sh"
-      register: shfiles   
-    - name: print shfiles
-      debug:
-        var: shfiles
+      register: shfiles  
+      when: not tomcat_latest_dir.stat.exists 
     - set_fact:
         tomcat_executables: "{{ shfiles.files | map(attribute='path') | list }}" 
-    - name: print tomcatexcecutables
-      debug:
-        var: tomcat_executables    
+      when: not tomcat_latest_dir.stat.exists  
     - name: execute permissions to .sh files
       ansible.builtin.file:
         path: "{{ item }}"
         mode: 0751
       with_items: "{{ tomcat_executables }}"  
+      when: not tomcat_latest_dir.stat.exists
     - name: copy service file
       ansible.builtin.copy:
         src: tomcat.service
-        dest: /etc/systemd/system/tomcat.service
+        dest: "{{ tomcat_service_dest }}"
       notify: 
         - reload and enable tomcat 
     - name: ensure tomcat is running
