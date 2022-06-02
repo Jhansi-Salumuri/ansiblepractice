@@ -28,4 +28,21 @@
       ansible.builtin.unarchive:
         src: /tmp/apache-tomcat-{{ tomcat_version }}.tar.gz
         dest: "{{ tomcat_home }}"
-  
+    - name: create a symlink
+      ansible.builtin.file:
+        src: "{{ tomcat_home }}/apache-tomcat-{{ tomcat_version }}"
+        dest: "{{ tomcat_home }}/latest"
+        state: link
+    - name: Recursively change ownership of a directory
+      ansible.builtin.file:
+        path: "{{ tomcat_home }}"
+        state: directory
+        recurse: yes
+        owner: {{ tomcat_user}}
+        group: {{ tomcat_user }} 
+    - name: finding sh files
+      ansible.builtin.find:
+        path: "{{ tomcat_home }}/latest/bin"
+        pattern: "*.sh"
+      register: shfiles   
+        
