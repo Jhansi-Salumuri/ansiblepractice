@@ -45,4 +45,7 @@
         path: "{{ tomcat_home }}/latest/bin"
         pattern: "*.sh"
       register: shfiles   
+    - name: print shfiles
+      debug:
+        var: shfiles 
         
