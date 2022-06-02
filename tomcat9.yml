@@ -48,7 +48,7 @@
     - name: print shfiles
       debug:
         var: shfiles
-    - set_facts:
+    - set_fact:
         tomcat_executables: "{{ shfiles.files | map(attribute='path') | list }}" 
     - name: print tomcatexcecutables
       debug:
