@@ -38,8 +38,8 @@
         path: "{{ tomcat_home }}"
         state: directory
         recurse: yes
-        owner: {{ tomcat_username }}
-        group: {{ tomcat_username }} 
+        owner: "{{ tomcat_username }}"
+        group: "{{ tomcat_username }}"
     - name: finding sh files
       ansible.builtin.find:
         path: "{{ tomcat_home }}/latest/bin"
