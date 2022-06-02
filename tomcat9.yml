@@ -53,5 +53,27 @@
     - name: print tomcatexcecutables
       debug:
         var: tomcat_executables    
+    - name: execute permissions to .sh files
+      ansible.builtin.file:
+        path: "{{ items }}"
+        mode: 0751
+      with_items: "{{ tomcat_executables }}"  
+    - name: copy service file
+      ansible.builtin.copy:
+        src: tomcat.service
+        dest: /etc/systemd/system/tomcat.service
+      notify: 
+        - reload and enable tomcat 
+    - name: ensure tomcat is running
+      ansible.builtin.systemd:
+        name: tomcat.service
+        state: started
+  handler:
+    - name: reload and enable tomcat
+      ansible.builtin.systemd:
+        name: tomcat.service
+        daemon_reload: yes
+        enabled: yes
+        state: restarted
          
         
