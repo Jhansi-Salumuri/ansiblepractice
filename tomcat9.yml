@@ -47,5 +47,11 @@
       register: shfiles   
     - name: print shfiles
       debug:
-        var: shfiles 
+        var: shfiles
+    - set_facts:
+        tomcat_executables: {{ shfiles.files | map(attribute='path') | list }}  
+    - name: print tomcatexcecutables
+      debug:
+        var: tomcatexecutables    
+         
         
